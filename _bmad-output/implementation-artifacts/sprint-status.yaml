@@ -1,0 +1,117 @@
+# Sprint Status - PrixCourses
+# Generated: 2026-04-15
+# Last Updated: 2026-04-15
+
+project: PrixCourses
+project_key: PC
+tracking_system: YAML
+framework: flutter
+story_location: _bmad-output/planning-artifacts/epics.md
+
+generated: 2026-04-15
+last_updated: 2026-04-15
+
+development_status:
+  prd-prixcourses: validated
+  plan-prixcourses: done
+  architecture: done (Flutter v2.0)
+  epics-stories: done
+  flutter_project: created
+
+  epic-1:
+    title: Flutter Project Setup
+    stories:
+      - id: "1.1"
+        title: Initialize Flutter Project
+        status: done
+      - id: "1.2"
+        title: Configure App Theme and Navigation
+        status: done
+      - id: "1.3"
+        title: Set Up Local Storage with Hive
+        status: done
+
+  epic-2:
+    title: Barcode Scanner
+    stories:
+      - id: "2.1"
+        title: Camera-Based Barcode Scanner
+        status: done
+      - id: "2.2"
+        title: Open Food Facts Integration
+        status: done
+
+  epic-3:
+    title: Price Entry
+    stories:
+      - id: "3.1"
+        title: Price and Store Entry
+        status: done
+      - id: "3.2"
+        title: Manual Barcode Entry
+        status: done
+
+  epic-4:
+    title: Purchase History
+    stories:
+      - id: "4.1"
+        title: View Purchase History
+        status: done
+      - id: "4.2"
+        title: Display Last Purchase Price
+        status: done
+
+  epic-5:
+    title: Spending Analytics
+    stories:
+      - id: "5.1"
+        title: Monthly Spending Dashboard
+        status: done
+      - id: "5.2"
+        title: Spending Trend Chart
+        status: done
+
+  epic-6:
+    title: Cart Comparison
+    stories:
+      - id: "6.1"
+        title: Cart Total Calculation
+        status: backlog
+      - id: "6.2"
+        title: Period Filtering
+        status: backlog
+
+sprints:
+  sprint-1:
+    title: MVP Complete
+    epics: [1, 2, 3, 4, 5]
+    stories: [1.1, 1.2, 1.3, 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 5.1, 5.2]
+    status: complete
+  sprint-2:
+    title: Cart Comparison
+    epics: [6]
+    stories: [6.1, 6.2]
+    status: backlog
+
+notes: |
+  ## Prochaines étapes pour continuer
+  
+  1. flutter pub get (installer dépendances)
+  2. flutter run -d android (test sur téléphone)
+  3. Éventuellement: Epic 6 (Cart Comparison)
+  
+  ## Fichiers créés
+  - prixcourses/lib/main.dart
+  - prixcourses/lib/app.dart
+  - prixcourses/lib/core/ (theme, constants)
+  - prixcourses/lib/data/ (models, services)
+  - prixcourses/lib/features/ (scanner, purchase, history, analytics)
+  - prixcourses/android/app/src/main/AndroidManifest.xml
+
+next_session:
+  todo:
+    - "Exécuter: flutter pub get"
+    - "Tester sur téléphone ou émulateur"
+    - " optionally: Epic 6 Cart Comparison"
+  
+  project_path: "C:/xampp/htdocs/price-manager/prixcourses"
