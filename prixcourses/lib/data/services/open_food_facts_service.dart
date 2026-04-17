@@ -16,7 +16,11 @@ class OpenFoodFactsService {
   Future<Product?> getProductByBarcode(String barcode) async {
     try {
       final response = await _dio.get(
-        '${AppConstants.openFoodFactsProductEndpoint}/$barcode.json',
+        '/api/v2/product/$barcode',
+        queryParameters: {
+          'fields':
+              'product_name,product_name_fr,brands,image_url,image_front_url,image_small_url,categories,nutriscore_grade,nutriments,origins'
+        },
       );
 
       if (response.statusCode == 200 && response.data['status'] == 1) {
@@ -28,9 +32,9 @@ class OpenFoodFactsService {
       if (e.response?.statusCode == 404) {
         return null;
       }
-      throw Exception('Failed to fetch product: ${e.message}');
+      throw Exception('Échec de récupération du produit: ${e.message}');
     } catch (e) {
-      throw Exception('Failed to fetch product: $e');
+      throw Exception('Échec de récupération du produit: $e');
     }
   }
 }

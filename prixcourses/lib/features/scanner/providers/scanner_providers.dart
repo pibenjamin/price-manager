@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/product.dart';
-import '../../data/models/purchase.dart';
-import '../../data/services/open_food_facts_service.dart';
-import '../../data/services/local_storage_service.dart';
+import '../../../data/models/product.dart';
+import '../../../data/models/purchase.dart';
+import '../../../data/services/open_food_facts_service.dart';
+import '../../../data/services/local_storage_service.dart';
 import 'package:uuid/uuid.dart';
 
 // Services
@@ -16,7 +16,8 @@ final isLoadingProductProvider = StateProvider<bool>((ref) => false);
 final scannerErrorProvider = StateProvider<String?>((ref) => null);
 
 // Purchases State
-final purchasesProvider = StateNotifierProvider<PurchasesNotifier, List<Purchase>>((ref) {
+final purchasesProvider =
+    StateNotifierProvider<PurchasesNotifier, List<Purchase>>((ref) {
   final storageService = ref.watch(localStorageServiceProvider);
   return PurchasesNotifier(storageService);
 });
@@ -71,7 +72,8 @@ final lastPurchaseProvider = Provider.family<Purchase?, String>((ref, barcode) {
 });
 
 // Products Cache
-final productsCacheProvider = StateNotifierProvider<ProductsCacheNotifier, Map<String, Product>>((ref) {
+final productsCacheProvider =
+    StateNotifierProvider<ProductsCacheNotifier, Map<String, Product>>((ref) {
   final storageService = ref.watch(localStorageServiceProvider);
   return ProductsCacheNotifier(storageService);
 });
@@ -79,7 +81,18 @@ final productsCacheProvider = StateNotifierProvider<ProductsCacheNotifier, Map<S
 class ProductsCacheNotifier extends StateNotifier<Map<String, Product>> {
   final LocalStorageService _storageService;
 
-  ProductsCacheNotifier(this._storageService) : super({});
+  ProductsCacheNotifier(this._storageService) : super({}) {
+    _loadProducts();
+  }
+
+  void _loadProducts() {
+    final products = _storageService.getAllProducts();
+    final Map<String, Product> cache = {};
+    for (final product in products) {
+      cache[product.barcode] = product;
+    }
+    state = cache;
+  }
 
   Product? getProduct(String barcode) {
     if (state.containsKey(barcode)) {
@@ -89,8 +102,12 @@ class ProductsCacheNotifier extends StateNotifier<Map<String, Product>> {
   }
 
   Future<Product?> fetchAndCacheProduct(String barcode) async {
+    if (state.containsKey(barcode)) {
+      return state[barcode];
+    }
+
     final openFoodFacts = OpenFoodFactsService();
-    
+
     try {
       final product = await openFoodFacts.getProductByBarcode(barcode);
       if (product != null) {
@@ -105,10 +122,13 @@ class ProductsCacheNotifier extends StateNotifier<Map<String, Product>> {
 }
 
 // Analytics
-final monthlySpendingProvider = Provider.family<double, ({int year, int month})>((ref, params) {
+final monthlySpendingProvider =
+    Provider.family<double, ({int year, int month})>((ref, params) {
   final purchases = ref.watch(purchasesProvider);
   return purchases
-      .where((p) => p.purchaseDate.year == params.year && p.purchaseDate.month == params.month)
+      .where((p) =>
+          p.purchaseDate.year == params.year &&
+          p.purchaseDate.month == params.month)
       .fold(0, (sum, p) => sum + p.price);
 });
 

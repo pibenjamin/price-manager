@@ -24,13 +24,22 @@ class ProductAdapter extends TypeAdapter<Product> {
       category: fields[4] as String?,
       nutriScore: fields[5] as String?,
       createdAt: fields[6] as DateTime?,
+      energyKcal: fields[7] as double?,
+      fat: fields[8] as double?,
+      saturatedFat: fields[9] as double?,
+      carbohydrates: fields[10] as double?,
+      sugars: fields[11] as double?,
+      proteins: fields[12] as double?,
+      salt: fields[13] as double?,
+      fibers: fields[14] as double?,
+      origins: fields[15] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Product obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.barcode)
       ..writeByte(1)
@@ -44,7 +53,25 @@ class ProductAdapter extends TypeAdapter<Product> {
       ..writeByte(5)
       ..write(obj.nutriScore)
       ..writeByte(6)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(7)
+      ..write(obj.energyKcal)
+      ..writeByte(8)
+      ..write(obj.fat)
+      ..writeByte(9)
+      ..write(obj.saturatedFat)
+      ..writeByte(10)
+      ..write(obj.carbohydrates)
+      ..writeByte(11)
+      ..write(obj.sugars)
+      ..writeByte(12)
+      ..write(obj.proteins)
+      ..writeByte(13)
+      ..write(obj.salt)
+      ..writeByte(14)
+      ..write(obj.fibers)
+      ..writeByte(15)
+      ..write(obj.origins);
   }
 
   @override

@@ -18,7 +18,7 @@ class PrixCoursesApp extends StatelessWidget {
     return MaterialApp(
       title: 'PrixCourses',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.cyberpunkTheme,
       home: const MainNavigationScreen(),
     );
   }
@@ -67,9 +67,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             label: 'Historique',
           ),
           NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(Icons.analytics),
-            label: 'Analytics',
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: 'Stats',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
@@ -89,10 +89,46 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Paramètres'),
+        title: const Text('PARAMÈTRES'),
       ),
-      body: const Center(
-        child: Text('Paramètres à venir'),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppTheme.neonYellow.withValues(alpha: 0.3),
+                  width: 2,
+                ),
+              ),
+              child: Icon(
+                Icons.settings_outlined,
+                size: 80,
+                color: AppTheme.neonYellow.withValues(alpha: 0.5),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'PARAMÈTRES À VENIR',
+              style: TextStyle(
+                color: AppTheme.neonYellow,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Version 1.0.0',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
