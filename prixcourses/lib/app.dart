@@ -1,3 +1,12 @@
+/// PrixCourses App
+/// Main entry point with bottom navigation
+///
+/// Screens (4 tabs):
+/// - Scanner (index 0)
+/// - Historique (index 1)
+/// - Stats (index 2)
+/// - Paramètres (index 3) [EPIC 7 - Story 7.4]
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +14,7 @@ import 'core/theme/app_theme.dart';
 import 'features/scanner/presentation/scanner_screen.dart';
 import 'features/history/presentation/history_screen.dart';
 import 'features/analytics/presentation/analytics_screen.dart';
+import 'features/settings/presentation/settings_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: PrixCoursesApp()));
@@ -77,58 +87,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             label: 'Paramètres',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('PARAMÈTRES'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.neonYellow.withValues(alpha: 0.3),
-                  width: 2,
-                ),
-              ),
-              child: Icon(
-                Icons.settings_outlined,
-                size: 80,
-                color: AppTheme.neonYellow.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'PARAMÈTRES À VENIR',
-              style: TextStyle(
-                color: AppTheme.neonYellow,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Version 1.0.0',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.6),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
