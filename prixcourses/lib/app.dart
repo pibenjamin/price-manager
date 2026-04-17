@@ -1,4 +1,4 @@
-/// PrixCourses App
+/// PrixCourses App - Material Design 3
 /// Main entry point with bottom navigation
 ///
 /// Screens (4 tabs):
@@ -6,6 +6,11 @@
 /// - Historique (index 1)
 /// - Stats (index 2)
 /// - Paramètres (index 3) [EPIC 7 - Story 7.4]
+///
+/// Theme: Material Design 3 - Cold Blue
+/// Primary: #1565C0 (Blue)
+/// Secondary: #00897B (Teal)
+/// Tertiary: #7B1FA2 (Purple)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +33,7 @@ class PrixCoursesApp extends StatelessWidget {
     return MaterialApp(
       title: 'PrixCourses',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.cyberpunkTheme,
+      theme: AppTheme.lightTheme,
       home: const MainNavigationScreen(),
     );
   }
