@@ -63,7 +63,52 @@ lib/
 If `lib/features/stores/` errors appear, the folder was deleted but references remain. Check `app.dart` and remove any imports.
 
 ### Camera/Scanner
-`MobileScanner` requires physical device - won't work in Chrome/web.
+`MobileScanner` requires physical device - won't work on Chrome/web.
 
 ### Hive on Web
 Known issue with double-open of boxes on Chrome. Works on Android.
+
+## Documentation Rules
+
+### Before Implementation
+**ALWAYS** add Epic/Story documentation comments BEFORE writing any implementation code.
+
+Format:
+```dart
+/// EPIC X: [Titre Epic]
+/// STORY X.Y: [Titre Story]
+///
+/// Responsabilités:
+/// - [Description des responsabilités]
+///
+/// Critères d'acceptation:
+/// - [Critère 1]
+/// - [Critère 2]
+///
+/// [Optionnel: Wireframe, diagramme, ou notes techniques]
+```
+
+Example:
+```dart
+/// EPIC 7: Export / Import des Données
+/// STORY 7.4: Écran Paramètres
+///
+/// Responsabilités:
+/// - Affiche les stats (nb achats, nb produits)
+/// - Propose les boutons Export JSON/CSV
+/// - Propose l'import JSON avec options Fusionner/Remplacer
+///
+/// Critères d'acceptation:
+/// - GIVEN: L'utilisateur est sur l'écran Paramètres
+/// WHEN: Il clique sur "Exporter en JSON"
+/// THEN: Un fichier JSON est créé dans le dossier Downloads
+
+import 'package:flutter/material.dart';
+// ... implementation
+```
+
+### Documentation Location
+- Every Dart file MUST start with Epic/Story documentation
+- Document the file BEFORE any imports
+- Reference the corresponding spec in `_bmad-output/planning-artifacts/`
+- App entry points (app.dart) document which Epic/Stories they integrate
