@@ -13,6 +13,11 @@ class AppTheme {
   static const Color priceBad = Color(0xFFFF9800);
   static const Color priceNeutral = Color(0xFF9E9E9E);
 
+  static const Color primaryCyan = Color(0xFF00FFFF);
+  static const Color secondaryPink = Color(0xFFFF00FF);
+  static const Color darkBackground = Color(0xFF0D0D0D);
+  static const Color cardBackground = Color(0xFF1A1A2E);
+
   static const Color _seedColor = Color(0xFF1565C0);
 
   static ThemeData get lightTheme {

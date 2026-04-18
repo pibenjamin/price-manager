@@ -11,6 +11,8 @@ import 'features/scanner/presentation/scanner_screen.dart';
 import 'features/history/presentation/history_screen.dart';
 import 'features/analytics/presentation/analytics_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/providers/auth_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: PrixCoursesApp()));
@@ -27,8 +29,23 @@ class PrixCoursesApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const MainNavigationScreen(),
+      home: const AuthWrapper(),
     );
+  }
+}
+
+class AuthWrapper extends ConsumerWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+
+    if (!authState.isAuthenticated) {
+      return const LoginScreen();
+    }
+
+    return const MainNavigationScreen();
   }
 }
 

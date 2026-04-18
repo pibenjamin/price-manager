@@ -1,0 +1,66 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: prixcourses_api_app
+    restart: unless-stopped
+    ports:
+      - "8005:80"
+    volumes:
+      - .:/var/www/html:cached
+      - prixcourses_api_vendor:/var/www/html/vendor
+      - prixcourses_api_node_modules:/var/www/html/node_modules
+      - prixcourses_api_storage_logs:/var/www/html/storage/logs
+      - prixcourses_api_bootstrap_cache:/var/www/html/bootstrap/cache
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - OPCACHE_ENABLE=1
+      - OPCACHE_ENABLE_CLI=1
+      - OPCACHE_MEMORY_CONSUMPTION=256
+      - OPCACHE_REVALIDATE_FREQ=0
+      - OPCACHE_INTERNED_STRINGS_BUFFER=16
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=prixcourses_api
+      - DB_USERNAME=prixcourses_api
+      - DB_PASSWORD=secret
+      - APP_KEY=base64:r/e2bHuFoKGuoT4zofL29NSMWVazdttotM1twpLs+wY=
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8005
+      - SANCTUM_STATEFUL_DOMAINS=localhost:8005,127.0.0.1:8005
+    networks:
+      - prixcourses_api_network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: prixcourses_api_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: prixcourses_api
+      MYSQL_USER: prixcourses_api
+      MYSQL_PASSWORD: secret
+      MYSQL_DEFAULT_STORAGE_ENGINE: InnoDB
+    ports:
+      - "3311:3306"
+    volumes:
+      - prixcourses_api_db_data:/var/lib/mysql
+    networks:
+      - prixcourses_api_network
+    command: --default-authentication-plugin=mysql_native_password --innodb_buffer_pool_size=256M
+
+networks:
+  prixcourses_api_network:
+    driver: bridge
+
+volumes:
+  prixcourses_api_db_data:
+  prixcourses_api_vendor:
+  prixcourses_api_node_modules:
+  prixcourses_api_storage_logs:
+  prixcourses_api_bootstrap_cache:
