@@ -1,47 +1,16 @@
 /// EPIC 7: Export / Import des Données
 /// STORY 7.4: Écran Paramètres
 ///
-/// Responsabilités:
-/// - Affiche les stats (nb achats, nb produits)
-/// - Propose les boutons Export JSON/CSV
-/// - Propose l'import JSON avec options Fusionner/Remplacer
-/// - Affiche dialogs de feedback (succès/erreur)
-///
-/// Wireframe:
-///
-/// ┌─────────────────────────────────────┐
-/// │ ← PARAMÈTRES                        │
-/// ├─────────────────────────────────────┤
-/// │  DONNÉES                            │
-/// │  ┌─────────────────────────────┐   │
-/// │  │ X Achats │ X Produits       │   │
-/// │  └─────────────────────────────┘   │
-/// │                                     │
-/// │  EXPORT                             │
-/// │  ┌─────────────────────────────┐   │
-/// │  │ Export JSON                 │   │
-/// │  └─────────────────────────────┘   │
-/// │  ┌─────────────────────────────┐   │
-/// │  │ Export CSV                  │   │
-/// │  └─────────────────────────────┘   │
-/// │                                     │
-/// │  IMPORT                             │
-/// │  ┌─────────────────────────────┐   │
-/// │  │ Import JSON                 │   │
-/// │  └─────────────────────────────┘   │
-/// │                                     │
-/// │  À PROPOS                           │
-/// │  Version 1.0.0                      │
-/// └─────────────────────────────────────┘
-///
+/// Material Design 3 implementation with:
+/// - M3 Cards and ListTiles
+/// - M3 Dialogs and buttons
+/// - Statistics display with M3 patterns
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../data/services/local_storage_service.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../providers/settings_providers.dart';
-import '../services/export_import_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -51,236 +20,161 @@ class SettingsScreen extends ConsumerWidget {
     final storage = ref.watch(localStorageServiceProvider);
     final purchasesCount = storage.getAllPurchases().length;
     final productsCount = storage.getAllProducts().length;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PARAMÈTRES'),
+        title: const Text('Paramètres'),
       ),
-      body: SingleChildScrollView(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSectionTitle('DONNÉES'),
-            const SizedBox(height: 12),
-            _buildStatsCard(purchasesCount, productsCount),
-            const SizedBox(height: 24),
-            _buildSectionTitle('EXPORT'),
-            const SizedBox(height: 12),
-            _buildExportCard(context, ref),
-            const SizedBox(height: 24),
-            _buildSectionTitle('IMPORT'),
-            const SizedBox(height: 12),
-            _buildImportCard(context, ref),
-            const SizedBox(height: 24),
-            _buildSectionTitle('À PROPOS'),
-            const SizedBox(height: 12),
-            _buildAboutCard(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        color: AppTheme.primaryNeonCyan,
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 2,
-      ),
-    );
-  }
-
-  Widget _buildStatsCard(int purchases, int products) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border:
-            Border.all(color: AppTheme.primaryNeonCyan.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(Icons.shopping_cart, '$purchases', 'Achats'),
-          Container(
-            height: 50,
-            width: 1,
-            color: AppTheme.primaryNeonCyan.withValues(alpha: 0.3),
+          _buildSectionTitle('Données', colorScheme),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildStatItem(
+                    context,
+                    Icons.shopping_cart,
+                    '$purchasesCount',
+                    'Achats',
+                    colorScheme.primary,
+                  ),
+                  Container(
+                    height: 50,
+                    width: 1,
+                    color: colorScheme.outlineVariant,
+                  ),
+                  _buildStatItem(
+                    context,
+                    Icons.inventory_2,
+                    '$productsCount',
+                    'Produits',
+                    colorScheme.secondary,
+                  ),
+                ],
+              ),
+            ),
           ),
-          _buildStatItem(Icons.inventory_2, '$products', 'Produits'),
+          const SizedBox(height: 24),
+          _buildSectionTitle('Export', colorScheme),
+          const SizedBox(height: 8),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.data_object, color: colorScheme.primary),
+                  title: const Text('Export JSON'),
+                  subtitle: const Text('Sauvegarde complète des données'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _exportJson(context, ref),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(Icons.table_chart, color: colorScheme.tertiary),
+                  title: const Text('Export CSV'),
+                  subtitle: const Text('Tableau des achats pour Excel'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _exportCsv(context, ref),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionTitle('Import', colorScheme),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.file_upload, color: colorScheme.secondary),
+              title: const Text('Import JSON'),
+              subtitle: const Text('Restaurer des données depuis un fichier'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _showImportDialog(context, ref),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionTitle('À propos', colorScheme),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.shopping_bag,
+                    size: 48,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'PrixCourses',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Version 1.0.0',
+                    style: TextStyle(color: colorScheme.outline),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Comparateur de prix alimentaire',
+                    style: TextStyle(
+                      color: colorScheme.outline,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(IconData icon, String value, String label) {
+  Widget _buildSectionTitle(String title, ColorScheme colorScheme) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: colorScheme.primary,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+    BuildContext context,
+    IconData icon,
+    String value,
+    String label,
+    Color color,
+  ) {
     return Column(
       children: [
-        Icon(icon, color: AppTheme.primaryNeonPink, size: 28),
+        Icon(icon, color: color, size: 28),
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.6),
-            fontSize: 12,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
         ),
       ],
-    );
-  }
-
-  Widget _buildExportCard(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.neonGreen.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppTheme.neonGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.data_object, color: AppTheme.neonGreen),
-            ),
-            title: const Text(
-              'Export JSON',
-              style: TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              'Sauvegarde complète des données',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-            ),
-            trailing:
-                const Icon(Icons.chevron_right, color: AppTheme.neonGreen),
-            onTap: () => _exportJson(context, ref),
-          ),
-          const Divider(color: AppTheme.neonGreen, height: 1),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppTheme.neonYellow.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.table_chart, color: AppTheme.neonYellow),
-            ),
-            title: const Text(
-              'Export CSV',
-              style: TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              'Tableau des achats pour Excel',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-            ),
-            trailing:
-                const Icon(Icons.chevron_right, color: AppTheme.neonYellow),
-            onTap: () => _exportCsv(context, ref),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildImportCard(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border:
-            Border.all(color: AppTheme.primaryNeonPink.withValues(alpha: 0.3)),
-      ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryNeonPink.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.file_upload, color: AppTheme.primaryNeonPink),
-        ),
-        title: const Text(
-          'Import JSON',
-          style: TextStyle(color: Colors.white),
-        ),
-        subtitle: Text(
-          'Restaurer des données depuis un fichier',
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-        ),
-        trailing:
-            const Icon(Icons.chevron_right, color: AppTheme.primaryNeonPink),
-        onTap: () => _showImportDialog(context, ref),
-      ),
-    );
-  }
-
-  Widget _buildAboutCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.bgCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-            color: AppTheme.primaryNeonPurple.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppTheme.primaryNeonCyan.withValues(alpha: 0.5),
-                width: 2,
-              ),
-            ),
-            child: const Icon(
-              Icons.shopping_bag,
-              size: 40,
-              color: AppTheme.primaryNeonCyan,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'PrixCourses',
-            style: TextStyle(
-              color: AppTheme.primaryNeonCyan,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Version 1.0.0',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Comparateur de prix alimentaire',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -324,19 +218,8 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.bgCard,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.primaryNeonCyan),
-        ),
-        title: const Text(
-          'Importer des données',
-          style: TextStyle(color: AppTheme.primaryNeonCyan),
-        ),
-        content: const Text(
-          'Choisissez comment importer les données:',
-          style: TextStyle(color: Colors.white70),
-        ),
+        title: const Text('Importer des données'),
+        content: const Text('Choisissez comment importer les données:'),
         actions: [
           TextButton(
             onPressed: () {
@@ -350,8 +233,6 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.pop(context);
               _showReplaceConfirmDialog(context, ref);
             },
-            style:
-                TextButton.styleFrom(foregroundColor: AppTheme.primaryNeonPink),
             child: const Text('Remplacer'),
           ),
           TextButton(
@@ -367,18 +248,9 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.bgCard,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.primaryNeonPink),
-        ),
-        title: const Text(
-          'Confirmer le remplacement',
-          style: TextStyle(color: AppTheme.primaryNeonPink),
-        ),
+        title: const Text('Confirmer le remplacement'),
         content: const Text(
           'Cette action supprimera toutes les données existantes. Cette action est irréversible.',
-          style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
@@ -390,8 +262,6 @@ class SettingsScreen extends ConsumerWidget {
               Navigator.pop(context);
               _importJson(context, ref, replace: true);
             },
-            style:
-                TextButton.styleFrom(foregroundColor: AppTheme.primaryNeonPink),
             child: const Text('Remplacer'),
           ),
         ],
@@ -432,12 +302,11 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.bgCard,
         content: Row(
           children: [
-            const CircularProgressIndicator(color: AppTheme.primaryNeonCyan),
+            const CircularProgressIndicator(),
             const SizedBox(width: 20),
-            Text(message, style: const TextStyle(color: Colors.white)),
+            Text(message),
           ],
         ),
       ),
@@ -448,19 +317,9 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.bgCard,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppTheme.neonGreen),
-        ),
-        title: Row(
-          children: [
-            const Icon(Icons.check_circle, color: AppTheme.neonGreen),
-            const SizedBox(width: 8),
-            Text(title, style: const TextStyle(color: AppTheme.neonGreen)),
-          ],
-        ),
-        content: Text(message, style: const TextStyle(color: Colors.white70)),
+        icon: const Icon(Icons.check_circle),
+        title: Text(title),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -475,19 +334,9 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.bgCard,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFFF3366)),
-        ),
-        title: Row(
-          children: [
-            const Icon(Icons.error, color: Color(0xFFFF3366)),
-            const SizedBox(width: 8),
-            Text(title, style: const TextStyle(color: Color(0xFFFF3366))),
-          ],
-        ),
-        content: Text(message, style: const TextStyle(color: Colors.white70)),
+        icon: const Icon(Icons.error),
+        title: Text(title),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

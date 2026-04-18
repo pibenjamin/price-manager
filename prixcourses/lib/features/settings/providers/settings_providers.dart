@@ -15,8 +15,6 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/models/product.dart';
-import '../../../data/models/purchase.dart';
 import '../../../data/services/local_storage_service.dart';
 import '../../scanner/providers/scanner_providers.dart';
 import '../services/export_import_service.dart';
@@ -120,7 +118,7 @@ class SettingsNotifier {
         }
         final existingProducts = _storageService.getAllProducts();
         for (final p in existingProducts) {
-          await _storageService.getProduct(p.barcode);
+          _storageService.getProduct(p.barcode);
         }
       }
 

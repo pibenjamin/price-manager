@@ -1,11 +1,7 @@
-/// PrixCourses App
-/// Main entry point with bottom navigation
+/// PrixCourses App - Material Design 3
 ///
-/// Screens (4 tabs):
-/// - Scanner (index 0)
-/// - Historique (index 1)
-/// - Stats (index 2)
-/// - Paramètres (index 3) [EPIC 7 - Story 7.4]
+/// Material Design 3 implementation following Flutter guidelines:
+/// https://api.flutter.dev/flutter/material/
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +11,8 @@ import 'features/scanner/presentation/scanner_screen.dart';
 import 'features/history/presentation/history_screen.dart';
 import 'features/analytics/presentation/analytics_screen.dart';
 import 'features/settings/presentation/settings_screen.dart';
+import 'features/auth/presentation/login_screen.dart';
+import 'features/auth/providers/auth_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: PrixCoursesApp()));
@@ -28,9 +26,26 @@ class PrixCoursesApp extends StatelessWidget {
     return MaterialApp(
       title: 'PrixCourses',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.cyberpunkTheme,
-      home: const MainNavigationScreen(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      home: const AuthWrapper(),
     );
+  }
+}
+
+class AuthWrapper extends ConsumerWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+
+    if (!authState.isAuthenticated) {
+      return const LoginScreen();
+    }
+
+    return const MainNavigationScreen();
   }
 }
 
@@ -53,6 +68,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -65,25 +82,33 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _currentIndex = index;
           });
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.qr_code_scanner_outlined),
-            selectedIcon: Icon(Icons.qr_code_scanner),
+            icon: Icon(Icons.qr_code_scanner_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon: Icon(Icons.qr_code_scanner,
+                color: colorScheme.onSecondaryContainer),
             label: 'Scanner',
           ),
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
+            icon: Icon(Icons.history_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.history, color: colorScheme.onSecondaryContainer),
             label: 'Historique',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
+            icon: Icon(Icons.bar_chart_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.bar_chart, color: colorScheme.onSecondaryContainer),
             label: 'Stats',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.settings, color: colorScheme.onSecondaryContainer),
             label: 'Paramètres',
           ),
         ],

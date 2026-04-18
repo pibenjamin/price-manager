@@ -1,7 +1,15 @@
+/// EPIC 4: Statistiques
+/// STORY 4.1: Écran Analytics
+///
+/// Material Design 3 implementation with:
+/// - M3 Cards for statistics display
+/// - Bar chart with M3 styling
+/// - Progress indicators with M3 patterns
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../core/theme/app_theme.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../../../data/models/purchase.dart';
 
@@ -45,9 +53,6 @@ class AnalyticsScreen extends ConsumerWidget {
               start: DateTime.now().subtract(const Duration(days: 30)),
               end: DateTime.now(),
             ),
-      helpText: 'SÉLECTIONNER LA PÉRIODE',
-      cancelText: 'ANNULER',
-      confirmText: 'OK',
     );
 
     if (picked != null) {
@@ -62,37 +67,38 @@ class AnalyticsScreen extends ConsumerWidget {
     final spendingByStore = ref.watch(spendingByStoreProvider);
     final startDate = ref.watch(startDateProvider);
     final endDate = ref.watch(endDateProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     final filteredPurchases = (startDate != null && endDate != null)
         ? purchases
             .where((p) =>
-                p!.purchaseDate
+                p.purchaseDate
                     .isAfter(startDate.subtract(const Duration(days: 1))) &&
                 p.purchaseDate.isBefore(endDate.add(const Duration(days: 1))))
             .toList()
         : purchases;
 
     final monthlyTotal =
-        filteredPurchases.fold<double>(0, (sum, p) => sum + p!.price);
+        filteredPurchases.fold<double>(0, (sum, p) => sum + p.price);
 
     final now = DateTime.now();
     final List<({String month, double spending})> monthlyData = [];
     for (int i = 5; i >= 0; i--) {
       final date = DateTime(now.year, now.month - i);
       final monthPurchases = purchases.where((p) =>
-          p!.purchaseDate.year == date.year &&
+          p.purchaseDate.year == date.year &&
           p.purchaseDate.month == date.month);
-      final total = monthPurchases.fold<double>(0, (sum, p) => sum + p!.price);
+      final total = monthPurchases.fold<double>(0, (sum, p) => sum + p.price);
       monthlyData.add((month: _frenchMonths[date.month - 1], spending: total));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('STATISTIQUES'),
+        title: const Text('Statistiques'),
         actions: [
           if (startDate != null && endDate != null)
             IconButton(
-              icon: const Icon(Icons.clear, color: AppTheme.primaryNeonPink),
+              icon: const Icon(Icons.clear),
               onPressed: () {
                 ref.read(startDateProvider.notifier).state = null;
                 ref.read(endDateProvider.notifier).state = null;
@@ -106,351 +112,282 @@ class AnalyticsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            InkWell(
-              onTap: () => _selectDateRange(context, ref),
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.bgCard,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: (startDate != null && endDate != null)
-                        ? AppTheme.neonGreen
-                        : AppTheme.primaryNeonCyan.withValues(alpha: 0.5),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.date_range,
-                      color: (startDate != null && endDate != null)
-                          ? AppTheme.neonGreen
-                          : AppTheme.primaryNeonCyan,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(
-                            startDate != null && endDate != null
-                                ? '${_formatDate(startDate)} - ${_formatDate(endDate)}'
-                                : 'TOUTE LA PÉRIODE',
-                            style: TextStyle(
-                              color: (startDate != null && endDate != null)
-                                  ? AppTheme.neonGreen
-                                  : AppTheme.primaryNeonCyan,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          if (startDate != null && endDate != null)
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => _selectDateRange(context, ref),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.date_range,
+                        color: startDate != null && endDate != null
+                            ? colorScheme.primary
+                            : colorScheme.outline,
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              '${endDate.difference(startDate).inDays + 1} jours',
-                              style: const TextStyle(
-                                color: Colors.white54,
-                                fontSize: 12,
+                              startDate != null && endDate != null
+                                  ? '${_formatDate(startDate)} - ${_formatDate(endDate)}'
+                                  : 'Toute la période',
+                              style: TextStyle(
+                                color: startDate != null && endDate != null
+                                    ? colorScheme.onSurface
+                                    : colorScheme.outline,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                        ],
+                            if (startDate != null && endDate != null)
+                              Text(
+                                '${endDate.difference(startDate).inDays + 1} jours',
+                                style: TextStyle(
+                                  color: colorScheme.outline,
+                                  fontSize: 12,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: colorScheme.outline),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Text(
+                      startDate != null && endDate != null
+                          ? 'TOTAL PÉRIODE'
+                          : 'TOTAL GÉNÉRAL',
+                      style: TextStyle(
+                        color: colorScheme.outline,
+                        fontSize: 12,
+                        letterSpacing: 1,
                       ),
                     ),
-                    const Icon(Icons.arrow_drop_down,
-                        color: AppTheme.primaryNeonCyan),
+                    const SizedBox(height: 8),
+                    Text(
+                      _formatPrice(monthlyTotal),
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        '${filteredPurchases.length} achats',
+                        style: TextStyle(
+                          color: colorScheme.onSecondaryContainer,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  AppTheme.primaryNeonCyan.withValues(alpha: 0.3),
-                  AppTheme.primaryNeonPurple.withValues(alpha: 0.3)
-                ]),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.primaryNeonCyan, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                      color: AppTheme.primaryNeonCyan.withValues(alpha: 0.3),
-                      blurRadius: 20,
-                      spreadRadius: 2),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    startDate != null && endDate != null
-                        ? 'TOTAL PÉRIODE'
-                        : 'TOTAL GÉNÉRAL',
-                    style: const TextStyle(
-                        color: Colors.white70, fontSize: 14, letterSpacing: 3),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatPrice(monthlyTotal),
-                    style: const TextStyle(
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryNeonCyan,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppTheme.bgDark,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color:
-                              AppTheme.primaryNeonPink.withValues(alpha: 0.5)),
-                    ),
-                    child: Text(
-                      '${filteredPurchases.length} ACHATS',
-                      style: const TextStyle(
-                        color: AppTheme.primaryNeonPink,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.bgCard,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                    color: AppTheme.primaryNeonPurple.withValues(alpha: 0.5)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(children: [
-                    Icon(Icons.show_chart, color: AppTheme.primaryNeonPurple),
-                    SizedBox(width: 8),
-                    Text(
-                      'ÉVOLUTION (6 MOIS)',
-                      style: TextStyle(
-                        color: AppTheme.primaryNeonPurple,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ]),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 200,
-                    child: monthlyData.isEmpty ||
-                            monthlyData.every((d) => d.spending == 0)
-                        ? const Center(
-                            child: Text('PAS ASSEZ DE DONNÉES',
-                                style: TextStyle(color: Colors.white54)))
-                        : BarChart(
-                            BarChartData(
-                              alignment: BarChartAlignment.spaceAround,
-                              maxY: (monthlyData
-                                          .map((d) => d.spending)
-                                          .reduce((a, b) => a > b ? a : b) *
-                                      1.3)
-                                  .ceilToDouble(),
-                              barGroups: monthlyData.asMap().entries.map((e) {
-                                return BarChartGroupData(
-                                  x: e.key,
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: e.value.spending,
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          AppTheme.primaryNeonCyan,
-                                          AppTheme.primaryNeonPurple
-                                        ],
-                                        begin: Alignment.bottomCenter,
-                                        end: Alignment.topCenter,
-                                      ),
-                                      width: 24,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(6),
-                                        topRight: Radius.circular(6),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                              titlesData: FlTitlesData(
-                                leftTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
-                                rightTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
-                                topTitles: const AxisTitles(
-                                    sideTitles: SideTitles(showTitles: false)),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      final index = value.toInt();
-                                      if (index >= 0 &&
-                                          index < monthlyData.length) {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 8),
-                                          child: Text(
-                                            monthlyData[index].month,
-                                            style: const TextStyle(
-                                              color: AppTheme.primaryNeonCyan,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      return const Text('');
-                                    },
-                                  ),
-                                ),
-                              ),
-                              borderData: FlBorderData(show: false),
-                              gridData: FlGridData(
-                                show: true,
-                                drawVerticalLine: false,
-                                horizontalInterval: 20,
-                                getDrawingHorizontalLine: (value) => FlLine(
-                                  color: AppTheme.primaryNeonCyan
-                                      .withValues(alpha: 0.1),
-                                  strokeWidth: 1,
-                                ),
-                              ),
-                            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.show_chart, color: colorScheme.tertiary),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Évolution (6 mois)',
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
                           ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.bgCard,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                    color: AppTheme.primaryNeonPink.withValues(alpha: 0.5)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(children: [
-                    Icon(Icons.store, color: AppTheme.primaryNeonPink),
-                    SizedBox(width: 8),
-                    Text(
-                      'DÉPENSES PAR MAGASIN',
-                      style: TextStyle(
-                        color: AppTheme.primaryNeonPink,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
+                        ),
+                      ],
                     ),
-                  ]),
-                  const SizedBox(height: 20),
-                  if (spendingByStore.isEmpty)
-                    const Text('Pas de données',
-                        style: TextStyle(color: Colors.white54))
-                  else
-                    ...((spendingByStore.entries.toList()
-                          ..sort((a, b) => b.value.compareTo(a.value)))
-                        .take(5)
-                        .map((entry) {
-                      final total = spendingByStore.values
-                          .fold<double>(0, (a, b) => a + b);
-                      final percentage = (entry.value / total * 100);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  entry.key.toUpperCase(),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryNeonPink
-                                        .withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    _formatPrice(entry.value),
-                                    style: const TextStyle(
-                                      color: AppTheme.primaryNeonPink,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Stack(children: [
-                              Container(
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.bgDark,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 200,
+                      child: monthlyData.isEmpty ||
+                              monthlyData.every((d) => d.spending == 0)
+                          ? Center(
+                              child: Text(
+                                'Pas assez de données',
+                                style: TextStyle(color: colorScheme.outline),
                               ),
-                              FractionallySizedBox(
-                                widthFactor: percentage / 100,
-                                child: Container(
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        AppTheme.primaryNeonPink,
-                                        AppTheme.primaryNeonPurple
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(4),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppTheme.primaryNeonPink
-                                            .withValues(alpha: 0.5),
-                                        blurRadius: 8,
+                            )
+                          : BarChart(
+                              BarChartData(
+                                alignment: BarChartAlignment.spaceAround,
+                                maxY: (monthlyData
+                                            .map((d) => d.spending)
+                                            .reduce((a, b) => a > b ? a : b) *
+                                        1.3)
+                                    .ceilToDouble(),
+                                barGroups: monthlyData.asMap().entries.map((e) {
+                                  return BarChartGroupData(
+                                    x: e.key,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: e.value.spending,
+                                        color: colorScheme.primary,
+                                        width: 24,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(4),
+                                          topRight: Radius.circular(4),
+                                        ),
                                       ),
                                     ],
+                                  );
+                                }).toList(),
+                                titlesData: FlTitlesData(
+                                  leftTitles: const AxisTitles(
+                                      sideTitles:
+                                          SideTitles(showTitles: false)),
+                                  rightTitles: const AxisTitles(
+                                      sideTitles:
+                                          SideTitles(showTitles: false)),
+                                  topTitles: const AxisTitles(
+                                      sideTitles:
+                                          SideTitles(showTitles: false)),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        final index = value.toInt();
+                                        if (index >= 0 &&
+                                            index < monthlyData.length) {
+                                          return Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8),
+                                            child: Text(
+                                              monthlyData[index].month,
+                                              style: TextStyle(
+                                                color: colorScheme.outline,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        return const Text('');
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ]),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${percentage.toStringAsFixed(1)}%',
-                              style: const TextStyle(
-                                color: AppTheme.primaryNeonCyan,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                                borderData: FlBorderData(show: false),
+                                gridData: const FlGridData(show: false),
                               ),
                             ),
-                          ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.store, color: colorScheme.secondary),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Dépenses par magasin',
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    }).toList()),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (spendingByStore.isEmpty)
+                      Text(
+                        'Pas de données',
+                        style: TextStyle(color: colorScheme.outline),
+                      )
+                    else
+                      ...((spendingByStore.entries.toList()
+                            ..sort((a, b) => b.value.compareTo(a.value)))
+                          .take(5)
+                          .map((entry) {
+                        final total = spendingByStore.values
+                            .fold<double>(0, (a, b) => a + b);
+                        final percentage = (entry.value / total * 100);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      entry.key,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    _formatPrice(entry.value),
+                                    style: TextStyle(
+                                      color: colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: percentage / 100,
+                                  minHeight: 8,
+                                  backgroundColor:
+                                      colorScheme.surfaceContainerHighest,
+                                  color: colorScheme.secondary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${percentage.toStringAsFixed(1)}%',
+                                style: TextStyle(
+                                  color: colorScheme.outline,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList()),
+                  ],
+                ),
               ),
             ),
           ],
