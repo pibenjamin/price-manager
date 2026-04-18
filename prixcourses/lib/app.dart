@@ -1,16 +1,7 @@
 /// PrixCourses App - Material Design 3
-/// Main entry point with bottom navigation
 ///
-/// Screens (4 tabs):
-/// - Scanner (index 0)
-/// - Historique (index 1)
-/// - Stats (index 2)
-/// - Paramètres (index 3) [EPIC 7 - Story 7.4]
-///
-/// Theme: Material Design 3 - Cold Blue
-/// Primary: #1565C0 (Blue)
-/// Secondary: #00897B (Teal)
-/// Tertiary: #7B1FA2 (Purple)
+/// Material Design 3 implementation following Flutter guidelines:
+/// https://api.flutter.dev/flutter/material/
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +25,8 @@ class PrixCoursesApp extends StatelessWidget {
       title: 'PrixCourses',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: const MainNavigationScreen(),
     );
   }
@@ -58,6 +51,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -70,25 +65,33 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _currentIndex = index;
           });
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.qr_code_scanner_outlined),
-            selectedIcon: Icon(Icons.qr_code_scanner),
+            icon: Icon(Icons.qr_code_scanner_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon: Icon(Icons.qr_code_scanner,
+                color: colorScheme.onSecondaryContainer),
             label: 'Scanner',
           ),
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
+            icon: Icon(Icons.history_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.history, color: colorScheme.onSecondaryContainer),
             label: 'Historique',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
+            icon: Icon(Icons.bar_chart_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.bar_chart, color: colorScheme.onSecondaryContainer),
             label: 'Stats',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined,
+                color: colorScheme.onSurfaceVariant),
+            selectedIcon:
+                Icon(Icons.settings, color: colorScheme.onSecondaryContainer),
             label: 'Paramètres',
           ),
         ],

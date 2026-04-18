@@ -1,19 +1,15 @@
 /// EPIC 4: Statistiques
 /// STORY 4.1: Écran Analytics
 ///
-/// Responsabilités:
-/// - Affiche les stats de dépenses
-/// - Filtre par période
-/// - Graphiques d'évolution
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur est sur l'écran Stats
-/// - WHEN: Il voit ses statistiques
-/// - THEN: Total dépenses, graphique, répartition par magasin
+/// Material Design 3 implementation with:
+/// - M3 Cards for statistics display
+/// - Bar chart with M3 styling
+/// - Progress indicators with M3 patterns
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../../../data/models/purchase.dart';
 

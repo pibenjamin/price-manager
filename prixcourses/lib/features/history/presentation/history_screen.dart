@@ -1,19 +1,15 @@
 /// EPIC 3: Historique des Achats
 /// STORY 3.1: Liste des Achats
 ///
-/// Responsabilités:
-/// - Affiche la liste de tous les achats
-/// - Mode sélection pour suppression bulk
-/// - Swipe to dismiss pour suppression unitaire
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur est sur l'écran Historique
-/// - WHEN: Il voit sa liste d'achats
-/// - THEN: Chaque achat affiche nom, prix, magasin, date
+/// Material Design 3 implementation with:
+/// - M3 Cards with proper elevation
+/// - Selection mode with M3 patterns
+/// - Swipe to dismiss with M3 styling
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../../../data/models/purchase.dart';
 import '../../../data/models/product.dart';
@@ -169,7 +165,7 @@ class HistoryScreen extends ConsumerWidget {
                 final isSelected = selectedIds.contains(purchase.id);
 
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Dismissible(
                     key: Key(purchase.id),
                     direction: DismissDirection.endToStart,
@@ -242,6 +238,7 @@ class HistoryScreen extends ConsumerWidget {
                           }
                         },
                         child: ListTile(
+                          contentPadding: const EdgeInsets.all(12),
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: SizedBox(

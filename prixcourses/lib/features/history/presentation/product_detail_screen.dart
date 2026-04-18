@@ -1,20 +1,16 @@
 /// EPIC 3: Historique des Achats
 /// STORY 3.2: Fiche Produit
 ///
-/// Responsabilités:
-/// - Affiche les détails d'un produit scanné
-/// - Affiche les infos nutritionnelles
-/// - Bouton pour voir l'évolution des prix
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur a scanné un produit
-/// - WHEN: Il clique sur un achat
-/// - THEN: La fiche produit s'affiche
+/// Material Design 3 implementation with:
+/// - M3 Cards and typography
+/// - Proper colorScheme usage
+/// - M3 Chips and Badges
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+
 import '../../../data/models/product.dart';
 import '../../scanner/providers/scanner_providers.dart';
 import 'price_evolution_screen.dart';
@@ -62,7 +58,8 @@ class ProductDetailScreen extends ConsumerWidget {
                       errorWidget: (context, url, error) => Container(
                         height: 200,
                         color: colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.broken_image, size: 80),
+                        child: Icon(Icons.broken_image,
+                            size: 80, color: colorScheme.outline),
                       ),
                     ),
                   Padding(

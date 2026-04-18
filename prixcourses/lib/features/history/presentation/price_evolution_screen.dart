@@ -1,20 +1,16 @@
 /// EPIC 3: Historique des Achats
 /// STORY 3.3: Évolution des Prix
 ///
-/// Responsabilités:
-/// - Affiche l'historique des prix d'un produit
-/// - Graphique d'évolution
-/// - Liste détaillée des achats
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur est sur la fiche produit
-/// - WHEN: Il clique sur "Voir évolution du prix"
-/// - THEN: L'écran montre l'évolution des prix
+/// Material Design 3 implementation with:
+/// - M3 Cards and typography
+/// - Line chart with M3 styling
+/// - Statistics display with M3 patterns
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import '../../../data/models/product.dart';
 import '../../../data/models/purchase.dart';
 import '../../scanner/providers/scanner_providers.dart';

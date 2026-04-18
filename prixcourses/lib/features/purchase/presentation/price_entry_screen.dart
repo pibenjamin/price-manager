@@ -1,20 +1,16 @@
 /// EPIC 2: Enregistrement d'un achat
 /// STORY 2.2: Écran Prix
 ///
-/// Responsabilités:
-/// - Formulaire de saisie du prix
-/// - Sélection du magasin
-/// - Sélection de la date
-///
-/// Critères d'acceptation:
-/// - GIVEN: Le produit est scanné
-/// - WHEN: L'utilisateur entre prix, magasin, date
-/// - THEN: L'achat est enregistré dans Hive
+/// Material Design 3 implementation with:
+/// - M3 Form fields and validation
+/// - M3 Dropdown with custom options
+/// - Date picker with M3 styling
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+
 import '../../../data/models/product.dart';
 import '../../scanner/providers/scanner_providers.dart';
 import '../../history/presentation/product_detail_screen.dart';

@@ -1,18 +1,14 @@
 /// EPIC 7: Export / Import des Données
 /// STORY 7.4: Écran Paramètres
 ///
-/// Responsabilités:
-/// - Affiche les stats (nb achats, nb produits)
-/// - Propose les boutons Export JSON/CSV
-/// - Propose l'import JSON avec options Fusionner/Remplacer
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur est sur l'écran Paramètres
-/// - WHEN: Il clique sur "Exporter en JSON"
-/// - THEN: Un fichier JSON est créé dans le dossier Downloads
+/// Material Design 3 implementation with:
+/// - M3 Cards and ListTiles
+/// - M3 Dialogs and buttons
+/// - Statistics display with M3 patterns
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../providers/settings_providers.dart';
 

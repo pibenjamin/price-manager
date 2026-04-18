@@ -1,20 +1,16 @@
 /// EPIC 1: Scanner de Produits
 /// STORY 1.1: Écran Scanner
 ///
-/// Responsabilités:
-/// - Caméra avec MobileScanner
-/// - Animation de scan moderne
-/// - Dialogue entrée manuelle
-///
-/// Critères d'acceptation:
-/// - GIVEN: L'utilisateur est sur l'écran Scanner
-/// - WHEN: La caméra détecte un code-barres
-/// - THEN: Le produit est recherché via Open Food Facts
+/// Material Design 3 implementation with:
+/// - NavigationBar style scanner interface
+/// - M3 Cards and Dialogs
+/// - Proper elevation and tinting
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
 import '../../scanner/providers/scanner_providers.dart';
 import '../../purchase/presentation/price_entry_screen.dart';
 
@@ -112,18 +108,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>
       } else {
         HapticFeedback.vibrate();
         ref.read(scannerErrorProvider.notifier).state = 'PRODUIT NON TROUVÉ';
+        setState(() => _isProcessing = false);
       }
     } catch (e) {
       if (!mounted) return;
       HapticFeedback.vibrate();
       ref.read(scannerErrorProvider.notifier).state = 'ERREUR: ${e.toString()}';
+      setState(() => _isProcessing = false);
     } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-        ref.read(isLoadingProductProvider.notifier).state = false;
-      }
+      ref.read(isLoadingProductProvider.notifier).state = false;
     }
   }
 
