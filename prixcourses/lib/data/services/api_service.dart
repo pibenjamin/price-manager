@@ -33,6 +33,8 @@ class ApiService {
     _token = token;
   }
 
+  String? getToken() => _token;
+
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,

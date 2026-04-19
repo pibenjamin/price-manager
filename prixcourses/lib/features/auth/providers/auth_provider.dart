@@ -39,6 +39,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final ApiService _apiService;
   final Box _authBox;
 
+  ApiService get apiService => _apiService;
+
   AuthNotifier(this._apiService)
       : _authBox = Hive.box(AppConstants.authBox),
         super(const AuthState()) {

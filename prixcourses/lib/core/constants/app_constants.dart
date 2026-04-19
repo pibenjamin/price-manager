@@ -12,9 +12,9 @@ class AppConstants {
     return 'http://10.0.2.2:8005';
   }
 
-  static const String apiAuthEndpoint = '/api/auth';
-  static const String apiPurchasesEndpoint = '/api/purchases';
-  static const String apiProductsEndpoint = '/api/products';
+  static const String apiAuthEndpoint = '/api/v1/auth';
+  static const String apiPurchasesEndpoint = '/api/v1/purchases';
+  static const String apiProductsEndpoint = '/api/v1/products';
 
   // Hive Box Names
   static const String productsBox = 'products';

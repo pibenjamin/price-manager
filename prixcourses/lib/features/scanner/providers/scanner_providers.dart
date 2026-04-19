@@ -3,6 +3,8 @@ import '../../../data/models/product.dart';
 import '../../../data/models/purchase.dart';
 import '../../../data/services/open_food_facts_service.dart';
 import '../../../data/services/local_storage_service.dart';
+import '../../../data/services/api_service.dart';
+import '../../auth/providers/auth_provider.dart';
 import 'package:uuid/uuid.dart';
 
 // Services
@@ -19,14 +21,16 @@ final scannerErrorProvider = StateProvider<String?>((ref) => null);
 final purchasesProvider =
     StateNotifierProvider<PurchasesNotifier, List<Purchase>>((ref) {
   final storageService = ref.watch(localStorageServiceProvider);
-  return PurchasesNotifier(storageService);
+  final authState = ref.watch(authProvider);
+  return PurchasesNotifier(storageService, authState);
 });
 
 class PurchasesNotifier extends StateNotifier<List<Purchase>> {
   final LocalStorageService _storageService;
   final _uuid = const Uuid();
+  final AuthState _authState;
 
-  PurchasesNotifier(this._storageService) : super([]) {
+  PurchasesNotifier(this._storageService, this._authState) : super([]) {
     _loadPurchases();
   }
 
@@ -52,6 +56,20 @@ class PurchasesNotifier extends StateNotifier<List<Purchase>> {
 
     await _storageService.savePurchase(purchase);
     _loadPurchases();
+
+    // Auto-sync to cloud if logged in
+    if (_authState.isAuthenticated && _authState.token != null) {
+      try {
+        final apiService = ApiService();
+        apiService.setToken(_authState.token);
+        await apiService.createPurchase(
+          productBarcode: productBarcode,
+          price: price,
+          store: store,
+          purchaseDate: purchaseDate.toIso8601String(),
+        );
+      } catch (_) {}
+    }
   }
 
   Future<void> deletePurchase(String id) async {
